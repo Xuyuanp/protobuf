@@ -983,6 +983,20 @@ func (fn funcResolver) Resolve(turl string) (proto.Message, error) {
 	return fn(turl)
 }
 
+func TestUnquoteInt64(t *testing.T) {
+	var v int64 = 100
+	msg := &pb.Simple{OInt64: &v}
+	m := Marshaler{UnquoteInt64: true}
+	actual, err := m.MarshalToString(msg)
+	if err != nil {
+		t.Errorf("an unexpected error occurred when marshaling message: %v", err)
+	}
+	wanted := `{"oInt64":100}`
+	if actual != wanted {
+		t.Errorf("marshaling JSON produced incorrect output: got %s, wanted %s", actual, wanted)
+	}
+}
+
 func TestAnyWithCustomResolver(t *testing.T) {
 	var resolvedTypeUrls []string
 	resolver := funcResolver(func(turl string) (proto.Message, error) {
